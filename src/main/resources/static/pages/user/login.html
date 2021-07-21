@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery.js"></script>
+</head>
+<body>
+<form action="">
+    <input type="text" id="username" name="username"/>
+    <input type="password" id="password" name="password"/>
+    <input type="button" value="登录" onclick="login()"/>
+    <input type="button" value="注册" onclick="register()"/>
+    <input type="button" value="注销" onclick="logout()"/>
+</form>
+<script>
+    function login() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        $.ajax({
+            //请求路径
+            url : "/user/login",
+            //请求类型
+            type : "post",
+            //data表示发送的数据
+            data : JSON.stringify({
+                username : username,
+                password : password,
+            }), //定义发送请求的数据格式为JSON字符串
+            contentType : "application/json;charset=utf-8",
+            //定义回调响应的数据格式为JSON字符串，该属性可以省略
+            dataType : "json",
+            //成功响应的结果
+            success : function(result) {
+                if (result["result"]==="success") {
+                    alert(result["result"]);
+                    // alert(result["token"]);
+                    window.localStorage.setItem("token",result["token"]);
+                }
+            }
+        });
+    }
+    function register() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var token=window.localStorage.getItem("token");
+        if(token===""||token===null){
+            token="";
+            alert("没有token");
+        }
+        $.ajax({
+            //请求路径
+            url : "/user/add",
+            headers: {'token':token},
+            //请求类型
+            type : "post",
+            //data表示发送的数据
+            data : JSON.stringify({
+                username : username,
+                password : password,
+            }), //定义发送请求的数据格式为JSON字符串
+            contentType : "application/json;charset=utf-8",
+            //定义回调响应的数据格式为JSON字符串，该属性可以省略
+            dataType : "json",
+            //成功响应的结果
+            success : function(result) {
+                if (result["result"]==="success") {
+                    alert(result["result"]);
+                }else{
+                    alert(result["msg"]);
+                }
+            }
+        });
+    }
+    function logout(){
+        window.localStorage.clear();
+    }
+</script>
+</body>
+</html>
